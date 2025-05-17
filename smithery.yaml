@@ -1,0 +1,34 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'python', args: ['server.py'], env: { TODOIST_API_TOKEN: config.todoistApiToken, TRANSPORT: config.transport || 'stdio', PYTHONUNBUFFERED: '1', ...(config.transport === 'sse' ? { MCP_HOST: config.mcpHost, MCP_PORT: String(config.mcpPort) } : {}) } })
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - todoistApiToken
+    properties:
+      todoistApiToken:
+        type: string
+        description: Your Todoist API token
+      transport:
+        type: string
+        default: stdio
+        description: "Transport mode: stdio or sse"
+      mcpHost:
+        type: string
+        default: 127.0.0.1
+        description: Host for SSE transport
+      mcpPort:
+        type: number
+        default: 8080
+        description: Port for SSE transport
+  exampleConfig:
+    todoistApiToken: your_todoist_api_token_here
+    transport: stdio
+    mcpHost: 127.0.0.1
+    mcpPort: 8080
