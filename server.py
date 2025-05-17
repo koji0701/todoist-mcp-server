@@ -44,15 +44,96 @@ mcp = FastMCP(
 )
 
 @mcp.tool()
-async def add_task(ctx: Context, content: str, project_id: str = None) -> str:
-    """Add a new task to ToDoist."""
-    print(f"Tool 'add_task' called with content: '{content}', project_id: {project_id}", file=sys.stderr)
+async def add_task(
+    ctx: Context,
+    content: str,
+    project_id: str = None,
+    description: str = None,
+    due_string: str = None,
+    due_date: str = None,
+    due_datetime: str = None,
+    due_lang: str = None,
+    priority: int = None,
+    labels: list[str] = None,
+    assignee_id: str = None,
+    section_id: str = None,
+    parent_id: str = None,
+    order: int = None,
+    duration: int = None,
+    duration_unit: str = None  # e.g., "minute" or "day"
+) -> str:
+    """
+    Add a new task to ToDoist.
+    
+    Args:
+        content: The content of the task.
+        project_id: ID of the project to add the task to.
+        description: A long description for the task.
+        due_string: A natural language string for the due date (e.g., "tomorrow at 12:00").
+        due_date: Specific due date in YYYY-MM-DD format.
+        due_datetime: Specific due date and time in RFC3339 format (e.g., "2023-09-01T12:00:00Z").
+        due_lang: Language for `due_string` processing (e.g., "en", "ja").
+        priority: Task priority (1 for p4, 2 for p3, 3 for p2, 4 for p1).
+        labels: A list of label names to attach to the task.
+        assignee_id: The ID of the user to assign the task to.
+        section_id: ID of the section to add the task to.
+        parent_id: ID of the parent task.
+        order: The order of the task among its siblings.
+        duration: The duration of the task in `duration_unit`.
+        duration_unit: The unit for the `duration` ("minute" or "day").
+    """
+    
+    # Log received parameters
+    call_params = {
+        "content": content, "project_id": project_id, "description": description,
+        "due_string": due_string, "due_date": due_date, "due_datetime": due_datetime,
+        "due_lang": due_lang, "priority": priority, "labels": labels,
+        "assignee_id": assignee_id, "section_id": section_id, "parent_id": parent_id,
+        "order": order, "duration": duration, "duration_unit": duration_unit
+    }
+    # Filter out None values for cleaner logging
+    provided_args = {k: v for k, v in call_params.items() if v is not None}
+    print(f"Tool 'add_task' called with args: {provided_args}", file=sys.stderr)
+
     if not ctx.request_context.lifespan_context or not hasattr(ctx.request_context.lifespan_context, 'todoist_client') or ctx.request_context.lifespan_context.todoist_client is None:
         return "Error: Todoist client not available in context. Check server logs for initialization issues."
+    
     try:
         client = ctx.request_context.lifespan_context.todoist_client
-        # The official todoist_api_python library returns a Task object
-        task = client.add_task(content=content, project_id=project_id)
+        
+        # Prepare arguments for the Todoist API client
+        # The client.add_task method takes keyword arguments for all optional fields
+        api_kwargs = {}
+        if project_id:
+            api_kwargs["project_id"] = project_id
+        if description:
+            api_kwargs["description"] = description
+        if due_string:
+            api_kwargs["due_string"] = due_string
+        if due_date:
+            api_kwargs["due_date"] = due_date
+        if due_datetime:
+            api_kwargs["due_datetime"] = due_datetime
+        if due_lang:
+            api_kwargs["due_lang"] = due_lang
+        if priority is not None: # Priority can be 0, so check for None explicitly
+            api_kwargs["priority"] = priority
+        if labels: # Assumes labels is a list of strings (label names)
+            api_kwargs["labels"] = labels
+        if assignee_id:
+            api_kwargs["assignee_id"] = assignee_id
+        if section_id:
+            api_kwargs["section_id"] = section_id
+        if parent_id:
+            api_kwargs["parent_id"] = parent_id
+        if order is not None:
+            api_kwargs["order"] = order
+        if duration is not None:
+            api_kwargs["duration"] = duration
+        if duration_unit:
+            api_kwargs["duration_unit"] = duration_unit
+            
+        task = client.add_task(content=content, **api_kwargs)
         print(f"Todoist API: Task added successfully - ID: {task.id}", file=sys.stderr)
         return f"Task added: {task.id} - {task.content}"
     except Exception as e:
