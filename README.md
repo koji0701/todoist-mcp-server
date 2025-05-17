@@ -6,11 +6,10 @@
 
 # Todoist MCP Server
 
-A [Model Context Protocol (MCP) server] (https://modelcontextprotocol.io/introduction) for interacting with Todoist. This server allows you to manage your Todoist tasks using natural language commands through an MCP-compatible client. This server is built using `fastmcp` and the `todoist-api-python` library.
-
+A [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/introduction) for interacting with Todoist. This server allows you to manage your Todoist tasks using natural language commands through an MCP-compatible client. This server is built using `fastmcp` and the `todoist-api-python` library.
 ## About The Project
 
-You can run this server locally, and an MCP-compatible client (like Claude desktop) can then call its tools to perform actions in your Todoist. Check the project out on [Smithery] (https://smithery.ai/server/@koji0701/todoist-mcp-server).
+You can run this server locally, and an MCP-compatible client (like Claude desktop) can then call its tools to perform actions in your Todoist. Check the project out on [Smithery](https://smithery.ai/server/@koji0701/todoist-mcp-server).
 
 Key functionalities include:
 - Creating, reading, updating, and deleting tasks, projects, sections, labels, and comments.
@@ -25,9 +24,9 @@ Key functionalities include:
 
 ## Prerequisites
 
-- **Python:** Version 3.12 or higher.
 - **Todoist Account:** A valid Todoist account.
 - **Todoist API Token:** You can get your API token from your Todoist App: Settings -> Integrations -> Developer API Token.
+- **Python:** Version 3.12 or higher.
 - **Package Manager:** Either `uv` (recommended for speed) or `pip` with `venv`/`conda`
 
 ## Installation
@@ -51,15 +50,15 @@ The (highly) recommended way to install and use this MCP server is with Smithery
     ```bash
     npx -y @smithery/cli install @koji0701/todoist-mcp-server --client <your_client_name>
     ```
-    For example, to install it for Claude Desktop: [2, 4, 6, 8, 10]
+    For example, to install it for Claude Desktop: 
     ```bash
     npx -y @smithery/cli install @koji0701/todoist-mcp-server --client claude
     ```
-    Or for Cursor: [7]
+    Or for Cursor: 
     ```bash
     npx -y @smithery/cli install @koji0701/todoist-mcp-server --client cursor
     ```
-    Smithery will attempt to automatically configure the server with your chosen client. [7, 8]
+    Smithery will attempt to automatically configure the server with your chosen client. 
 
 ## Configuration
 
@@ -72,7 +71,7 @@ To allow this server to interact with your Todoist account, you need to provide 
 3.  Under the "Developer" section, you will find your API token.
 4.  Copy this token.
 
-The Smithery installation process might prompt you for this token, or you may need to set it as an environment variable. The typical environment variable name is `TODOIST_API_KEY` or `TODOIST_TOKEN`. Please check the specific instructions provided by Smithery during installation or the requirements of your MCP client. [1]
+The Smithery installation process might prompt you for this token, or you may need to set it as an environment variable. The typical environment variable name is `TODOIST_API_KEY` or `TODOIST_TOKEN`. Please check the specific instructions provided by Smithery during installation or the requirements of your MCP client. 
 
 ## Usage
 
