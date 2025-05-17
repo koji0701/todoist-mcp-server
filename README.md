@@ -1,5 +1,6 @@
 # Todoist MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@koji0701/todoist-mcp-server)](https://smithery.ai/server/@koji0701/todoist-mcp-server)
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) <!-- Assuming MIT, replace if different or remove -->
 
@@ -42,6 +43,14 @@ Key functionalities include:
 ## Installation
 
 Choose one of the following installation methods:
+
+### Installing via Smithery
+
+To install todoist-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@koji0701/todoist-mcp-server):
+
+```bash
+npx -y @smithery/cli install @koji0701/todoist-mcp-server --client claude
+```
 
 ### Method 1: Using `uv` (Recommended)
 
