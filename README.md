@@ -4,28 +4,18 @@
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) <!-- Assuming MIT, replace if different or remove -->
 
-The Todoist MCP Server provides a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) interface to interact with the Todoist API. It allows MCP clients to manage Todoist tasks, projects, labels, comments, and more, by exposing various Todoist functionalities as MCP tools. This server is built using `fastmcp` and the `todoist-api-python` library.
+# Todoist MCP Server
+
+A [Model Context Protocol (MCP) server] (https://modelcontextprotocol.io/introduction) for interacting with Todoist. This server allows you to manage your Todoist tasks using natural language commands through an MCP-compatible client. This server is built using `fastmcp` and the `todoist-api-python` library.
 
 ## About The Project
 
-You can run this server locally, and an MCP-compatible client (like Claude desktop) can then call its tools to perform actions in your Todoist.
+You can run this server locally, and an MCP-compatible client (like Claude desktop) can then call its tools to perform actions in your Todoist. Check the project out on [Smithery] (https://smithery.ai/server/@koji0701/todoist-mcp-server).
 
 Key functionalities include:
 - Creating, reading, updating, and deleting tasks, projects, sections, labels, and comments.
 - Fetching data with filters and pagination.
 - Support for both `stdio` and `SSE` (Server-Sent Events) transport for MCP communication.
-
-## Features
-
-- **Comprehensive Todoist API Coverage:** Exposes a wide range of Todoist API functionalities.
-- **Task Management:** Add, get, list, filter, quick add, update, complete, uncomplete, move, and delete tasks.
-- **Project Management:** Add, get, list, update, archive, unarchive, delete projects, and list project collaborators.
-- **Section Management:** Add, get, list, update, and delete sections within projects.
-- **Label Management:** Add, get, list, update, delete personal labels, and manage shared labels.
-- **Comment Management:** Add, get, list, update, and delete comments on tasks or projects.
-- **Flexible Transport:** Supports `stdio` for local communication and `SSE` for network-based communication.
-- **Robust Serialization:** Handles Todoist API responses, including `datetime` objects, correctly for JSON-based MCP.
-- **Environment-Based Configuration:** Easy setup using a `.env` file.
 
 ## Recommended Use Cases
 - I primarily recommend using this in Claude Desktop or any other LLM that supports MCP integration. Here's how I use it:
@@ -38,104 +28,136 @@ Key functionalities include:
 - **Python:** Version 3.12 or higher.
 - **Todoist Account:** A valid Todoist account.
 - **Todoist API Token:** You can get your API token from your Todoist App: Settings -> Integrations -> Developer API Token.
-- **Package Manager:** Either `uv` (recommended for speed) or `pip` with `venv`/`conda`.
+- **Package Manager:** Either `uv` (recommended for speed) or `pip` with `venv`/`conda`
 
 ## Installation
 
-Choose one of the following installation methods:
+The (highly) recommended way to install and use this MCP server is with Smithery. Smithery is a command-line tool that helps you discover, install, and manage MCP servers. 
 
-### Installing via Smithery
+### Using Smithery CLI
 
-To install todoist-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@koji0701/todoist-mcp-server):
+1.  **Install Smithery CLI (if you haven't already):**
+    You can install the Smithery CLI using npm:
+    ```bash
+    npm install -g @smithery/cli
+    ```
+    Or use it directly with `npx`:
+    ```bash
+    npx -y @smithery/cli --help
+    ```
 
-```bash
-npx -y @smithery/cli install @koji0701/todoist-mcp-server --client claude
-```
+2.  **Install the Todoist MCP Server:**
+    Use the Smithery CLI to install this server for your preferred MCP client. Replace `<your_client_name>` with the client you are using (e.g., `claude`, `cursor`, `windsurf`).
+    ```bash
+    npx -y @smithery/cli install @koji0701/todoist-mcp-server --client <your_client_name>
+    ```
+    For example, to install it for Claude Desktop: [2, 4, 6, 8, 10]
+    ```bash
+    npx -y @smithery/cli install @koji0701/todoist-mcp-server --client claude
+    ```
+    Or for Cursor: [7]
+    ```bash
+    npx -y @smithery/cli install @koji0701/todoist-mcp-server --client cursor
+    ```
+    Smithery will attempt to automatically configure the server with your chosen client. [7, 8]
 
-### Method 1: Using `uv` (Recommended)
+## Configuration
+
+### Todoist API Token
+
+To allow this server to interact with your Todoist account, you need to provide a Todoist API token.
+
+1.  Log in to your Todoist account.
+2.  Go to **Settings** > **Integrations**.
+3.  Under the "Developer" section, you will find your API token.
+4.  Copy this token.
+
+The Smithery installation process might prompt you for this token, or you may need to set it as an environment variable. The typical environment variable name is `TODOIST_API_KEY` or `TODOIST_TOKEN`. Please check the specific instructions provided by Smithery during installation or the requirements of your MCP client. [1]
+
+## Usage
+
+Once installed and configured, your MCP client (e.g., Claude Desktop, Cursor) will be able to list and utilize the tools provided by this server. You can then interact with your Todoist tasks using natural language prompts within your client.
+
+Example (general idea, actual phrasing depends on the client and LLM):
+*   "Create a new task in Todoist: Buy milk, due tomorrow."
+*   "What are my Todoist tasks for today?"
+*   "Mark 'Finish report' as complete in Todoist."
+
+Refer to the documentation of your specific MCP client for more details on how to invoke tools.
+
+## Tools
+
+This server will expose tools for common Todoist operations, such as:
+
+*   Creating tasks
+*   Getting (listing/filtering) tasks
+*   Updating tasks
+*   Completing tasks
+*   Deleting tasks
+
+You can find the specific list of tools and their parameters by:
+*   Checking the server's page on Smithery: [https://smithery.ai/server/%40koji0701%2Ftodoist-mcp-server/tools](https://smithery.ai/server/%40koji0701%2Ftodoist-mcp-server/tools)
+*   Using a command within your MCP client to list available tools from this server (if supported by the client).
+
+## Development (Optional, runs it locally)
+
+If you want to contribute to this server or run it manually:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/koji0701/todoist-mcp-server.git
+    git clone <repository_url>
     cd todoist-mcp-server
     ```
+2.  **Install dependencies:**
+    (Assuming Python is installed. Choose one of the following methods based on your preferred package/environment manager.)
 
-2.  **Install `uv` (if you haven't already):**
     ```bash
-    pip install uv  # Or follow official uv installation instructions
+    # Using uv
+    uv pip install -r requirements.txt
+    ```
+    ```bash
+    # Or using Conda
+    # 1. Create and activate a new conda environment
+    conda create -n todoist_mcp_env python=3.12 
+    conda activate todoist_mcp_env
+
+    # 2. Install dependencies using pip within the conda environment
+    pip install -r requirements.txt
+    ```
+    ```bash
+    # Or using pip with venv
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
+    pip install -r requirements.txt
     ```
 
-3.  **Install dependencies using `uv`:**
-    `uv` will automatically create a virtual environment if one doesn't exist or use the existing one if `.venv` is present.
-    ```bash
-    uv pip install .
-    ```
 
-4.  **Set up environment variables:**
+3.  **Set environment variables:**
     Create a `.env` file in the project root directory (`todoist-mcp-server/.env`):
     ```env
     TODOIST_API_TOKEN="YOUR_TODOIST_API_TOKEN"
 
-    # Optional: For SSE transport (defaults to stdio if not set or when using with Claude Desktop as shown below)
+    # Optional: For SSE transport (defaults to stdio if not set)
     # TRANSPORT="sse"
     # MCP_HOST="127.0.0.1"  # Default host for SSE
     # MCP_PORT="8080"       # Default port for SSE
     ```
     Replace `"YOUR_TODOIST_API_TOKEN"` with your actual Todoist API token.
+4.  **Run the server:**
+    *   **If using `uv`:**
+        ```bash
+        uv run server.py
+        ```
+        (`uv run` executes the command within the project's managed environment.)
 
-### Method 2: Using `pip` and `venv`
+    *   **If using `pip` with `venv` or `conda` (ensure the environment is activated):**
+        ```bash
+        python server.py
+        ```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/koji0701/todoist-mcp-server.git
-    cd todoist-mcp-server
-    ```
+This will typically start the server locally. You would then need to configure your MCP client to connect to this local instance if not using Smithery for a production/deployed setup.
 
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-    ```
-
-3.  **Install dependencies using `pip`:**
-    ```bash
-    pip install .
-    ```
-
-4.  **Set up environment variables:**
-    Follow step 4 from the `uv` installation method.
-
-### Method 3: Using `conda`
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/koji0701/todoist-mcp-server.git
-    cd todoist-mcp-server
-    ```
-
-2.  **Create and activate a conda environment:**
-    ```bash
-    conda create -n todoist-mcp python=3.12
-    conda activate todoist-mcp
-    ```
-
-3.  **Install `pip` into the conda environment (if not already available):**
-    ```bash
-    conda install pip
-    ```
-
-4.  **Install dependencies using `pip` or `uv` within the conda environment:**
-    ```bash
-    pip install .
-    ```
-    ```bash
-    uv pip install .
-    ```
-
-5.  **Set up environment variables:**
-    Follow step 4 from the `uv` installation method.
-
-## Usage
+## Usage (if running locally)
 
 1.  **Run the server:**
     Navigate to the project directory.
@@ -176,7 +198,7 @@ npx -y @smithery/cli install @koji0701/todoist-mcp-server --client claude
     mcp client call --uri http://127.0.0.1:8080/mcp todoist.add_task --content "Buy groceries" --due_string "tomorrow"
     ```
 
-### Using with Claude Desktop
+### Using with Claude Desktop (if running locally)
 
 Claude Desktop's custom tools feature allows you to integrate local MCP servers like this one.
 
