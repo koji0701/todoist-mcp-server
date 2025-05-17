@@ -104,7 +104,7 @@ If you want to contribute to this server or run it manually:
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/koji0701/todoist-mcp-server.git
     cd todoist-mcp-server
     ```
 2.  **Install dependencies:**
@@ -338,4 +338,4 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information. (Note: Add a `LICENSE` file if one does not exist, e.g., with MIT License text).
+Distributed under the MIT License. See `LICENSE` for more information. 
