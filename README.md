@@ -3,11 +3,11 @@
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) <!-- Assuming MIT, replace if different or remove -->
 
-The Todoist MCP Server provides a [Message Control Protocol (MCP)](https://github.com/anthropics/mcp/) interface to interact with the Todoist API. It allows MCP clients to manage Todoist tasks, projects, labels, comments, and more, by exposing various Todoist functionalities as MCP tools. This server is built using `fastmcp` and the `todoist-api-python` library.
+The Todoist MCP Server provides a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) interface to interact with the Todoist API. It allows MCP clients to manage Todoist tasks, projects, labels, comments, and more, by exposing various Todoist functionalities as MCP tools. This server is built using `fastmcp` and the `todoist-api-python` library.
 
 ## About The Project
 
-This server acts as a bridge between an MCP client and your Todoist account. You can run this server locally, and an MCP-compatible client (like a Large Language Model agent) can then call its tools to perform actions in your Todoist.
+You can run this server locally, and an MCP-compatible client (like Claude desktop) can then call its tools to perform actions in your Todoist.
 
 Key functionalities include:
 - Creating, reading, updating, and deleting tasks, projects, sections, labels, and comments.
@@ -109,9 +109,12 @@ Choose one of the following installation methods:
     conda install pip
     ```
 
-4.  **Install dependencies using `pip` within the conda environment:**
+4.  **Install dependencies using `pip` or `uv` within the conda environment:**
     ```bash
     pip install .
+    ```
+    ```bash
+    uv pip install .
     ```
 
 5.  **Set up environment variables:**
@@ -164,7 +167,7 @@ Claude Desktop's custom tools feature allows you to integrate local MCP servers 
 
 1.  **Ensure Prerequisites are Met:**
     *   You have installed the server following one of the methods above.
-    *   Your `TODOIST_API_TOKEN` is accessible to the server (either via `.env` or directly in the Claude Desktop tool configuration as shown below).
+    *   Your `TODOIST_API_TOKEN` is accessible to the server (via `.env` and directly in the Claude Desktop tool configuration as shown below).
 
 2.  **Configure Custom Tool in Claude Desktop:**
     *   Open Claude Desktop and navigate to the custom tools configuration.
@@ -289,7 +292,7 @@ Refer to the `server.py` file for detailed parameters of each tool.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a pull request or open an issue for bugs, feature requests, or improvements.
+Contributions are welcome! Please feel free to submit a pull request or open an issue for bugs, feature requests, or improvements. Also, feel free to use this as a template for developing your own MCP server. 
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
