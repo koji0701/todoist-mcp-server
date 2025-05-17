@@ -47,7 +47,7 @@ Choose one of the following installation methods:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/todoist-mcp-server.git # Replace with actual URL
+    git clone https://github.com/koji0701/todoist-mcp-server.git
     cd todoist-mcp-server
     ```
 
@@ -78,7 +78,7 @@ Choose one of the following installation methods:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/todoist-mcp-server.git # Replace with actual URL
+    git clone https://github.com/koji0701/todoist-mcp-server.git
     cd todoist-mcp-server
     ```
 
@@ -100,7 +100,7 @@ Choose one of the following installation methods:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/todoist-mcp-server.git # Replace with actual URL
+    git clone https://github.com/koji0701/todoist-mcp-server.git
     cd todoist-mcp-server
     ```
 
