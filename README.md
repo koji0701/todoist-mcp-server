@@ -26,6 +26,12 @@ Key functionalities include:
 - **Robust Serialization:** Handles Todoist API responses, including `datetime` objects, correctly for JSON-based MCP.
 - **Environment-Based Configuration:** Easy setup using a `.env` file.
 
+## Recommended Use Cases
+- I primarily recommend using this in Claude Desktop or any other LLM that supports MCP integration. Here's how I use it:
+    - Combine this with Google Calendar (or any other calendar) MCP to automatically timeblock your tasks based on times you are available, their deadlines, and priority levels. Also, you can automatically break down larger tasks into subtasks and schedule them over several days. 
+    - Combine this with an email MCP to generate + schedule tasks in Todoist. Especially useful for Canvas email notifications, and automatically scheduling homework.
+    - Vibe-coding? Vibe-plan a sectioned, project plan with actionable, assigned tasks and descriptions that you can share with group members.
+
 ## Prerequisites
 
 - **Python:** Version 3.12 or higher.
