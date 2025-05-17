@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 import json
 import sys # For printing to stderr
-
+import asyncio
 from utils import get_todoist_client
 
 load_dotenv() # Ensure .env is loaded if token is there
@@ -175,13 +175,23 @@ async def complete_task(ctx: Context, task_id: str) -> str:
         print(f"Error in complete_task: {e}", file=sys.stderr)
         return f"Error completing task: {str(e)}"
 
+async def main():
+    transport = os.getenv("TRANSPORT", "stdio")
+    print(f"Starting Todoist MCP server with {transport} transport...", file=sys.stderr)
+    if transport == "stdio":
+        await mcp.run_stdio_async()
+    else: 
+        await mcp.run_sse_async()
+
+
 if __name__ == "__main__":
     print("Starting Todoist MCP server with STDIO transport...", file=sys.stderr)
-    try:
-        # mcp.run() is synchronous and handles the async loop for tools/lifespan
-        mcp.run(transport='stdio')
-    except Exception as e:
-        print(f"Todoist MCP server failed to run: {e}", file=sys.stderr)
-        # This ensures Claude Desktop sees the server process exited with an error.
-        sys.exit(1) 
+    asyncio.run(main())
     print("Todoist MCP server finished.", file=sys.stderr)
+    # try:
+    #     # mcp.run() is synchronous and handles the async loop for tools/lifespan
+    #     mcp.run(transport='stdio')
+    # except Exception as e:
+    #     print(f"Todoist MCP server failed to run: {e}", file=sys.stderr)
+    #     # This ensures Claude Desktop sees the server process exited with an error.
+    #     sys.exit(1) 
