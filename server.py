@@ -25,24 +25,29 @@ class ToDoistContext:
 async def todoist_lifespan(server: FastMCP) -> AsyncIterator[ToDoistContext]:
     print("Lifespan: Initializing Todoist client (lazy loading enabled)...", file=sys.stderr)
     client_instance: Optional[TodoistAPI] = None
-    try:
-        # Attempt to get the client; get_todoist_client will raise ValueError if token is missing
-        client_instance = get_todoist_client() 
-        print("Lifespan: Todoist client pre-initialized successfully.", file=sys.stderr)
-    except ValueError as ve:
-        # This is expected if the token is not set. Server will start, tools will demand-init.
-        print(f"Lifespan warning: {ve}. Client will be initialized by the first tool call if token is provided then.", file=sys.stderr)
-    except Exception as e:
-        # Other unexpected errors during initial attempt
-        print(f"Lifespan ERROR: Unexpected exception during Todoist client pre-initialization: {e}. Client will remain uninitialized.", file=sys.stderr)
-    
+    # Attempt to initialize the client if the token is available in the environment
+    # This allows pre-initialization if the token is already set.
+    # If not, tools will initialize it on demand.
+    if os.getenv("TODOIST_API_TOKEN"):
+        try:
+            client_instance = get_todoist_client()
+            print("Lifespan: Todoist client pre-initialized successfully from environment variable.", file=sys.stderr)
+        except ValueError as ve:
+            # This case should ideally not be hit if os.getenv("TODOIST_API_TOKEN") was true,
+            # but kept for robustness.
+            print(f"Lifespan warning during pre-initialization: {ve}. Client will be initialized by the first tool call if token is provided then.", file=sys.stderr)
+        except Exception as e:
+            print(f"Lifespan ERROR: Unexpected exception during Todoist client pre-initialization: {e}. Client will remain uninitialized.", file=sys.stderr)
+    else:
+        print("Lifespan: TODOIST_API_TOKEN not found in environment at startup. Client will be initialized by the first tool call if token is available then.", file=sys.stderr)
+
     context = ToDoistContext(todoist_client=client_instance)
     try:
         yield context
     finally:
         print("Lifespan: Exiting lifespan.", file=sys.stderr)
+        # No specific cleanup needed for the client here as it's managed by the TodoistAPI instance
         pass
-
 # Initialize FastMCP
 mcp = FastMCP(
     "todoist",
@@ -127,25 +132,34 @@ def _prepare_api_kwargs(**kwargs: Any) -> dict[str, Any]:
     return parsed_kwargs
 
 # --- Generic Client Getter for Tools ---
-async def _get_or_init_client(ctx: Context, tool_name_for_log: str) -> Optional[TodoistAPI]:
+async def _get_or_init_client(ctx: Context, tool_name_for_log: str) -> TodoistAPI:
     lifespan_ctx: ToDoistContext = ctx.request_context.lifespan_context # type: ignore
-    client: Optional[TodoistAPI] = lifespan_ctx.todoist_client
-
-    if client is None:
+    
+    if lifespan_ctx.todoist_client is None:
         print(f"Tool '{tool_name_for_log}': Client not pre-initialized. Attempting to initialize now...", file=sys.stderr)
         try:
-            client = get_todoist_client()
+            # This will fetch the token from the environment
+            client = get_todoist_client() 
             lifespan_ctx.todoist_client = client # Store for subsequent calls
-            print(f"Tool '{tool_name_for_log}': Client initialized successfully.", file=sys.stderr)
-        except ValueError as ve: # Token not set
+            print(f"Tool '{tool_name_for_log}': Client initialized successfully on demand.", file=sys.stderr)
+        except ValueError as ve: # Token not set or other issues from get_todoist_client
             print(f"Tool '{tool_name_for_log}' ERROR: {ve}", file=sys.stderr)
-            # This error will be caught by the tool and serialized as a response
-            raise # Re-raise to be caught by the tool's error handler
-        except Exception as e: # Other init errors
+            # Re-raise to be caught by the tool's error handler, which will serialize it.
+            raise 
+        except Exception as e: # Other unexpected init errors
             print(f"Tool '{tool_name_for_log}' ERROR: Failed to initialize Todoist client on demand: {e}", file=sys.stderr)
             raise # Re-raise
-    return client
+    
+    # At this point, lifespan_ctx.todoist_client should be non-None if initialization succeeded.
+    # If initialization failed, an exception would have been raised.
+    if lifespan_ctx.todoist_client is None:
+        # This should ideally not be reached if exceptions are handled correctly above.
+        # However, as a safeguard:
+        err_msg = "Todoist client could not be initialized due to a persistent issue. Please check logs."
+        print(f"Tool '{tool_name_for_log}' FATAL ERROR: {err_msg}", file=sys.stderr)
+        raise RuntimeError(err_msg) # Raise a runtime error as this is an unexpected state
 
+    return lifespan_ctx.todoist_client
 def _handle_tool_error(e: Exception, tool_name: str, item_id: Optional[str] = None) -> str:
     item_info = f" for item {item_id}" if item_id else ""
     error_message_prefix = f"Error in {tool_name}{item_info}"
@@ -1012,7 +1026,7 @@ async def main():
 
     if transport == "stdio":
         await mcp.run_stdio_async()
-    elif transport == "sse" or transport == "streamable_http"::
+    elif transport == "sse" or transport == "streamable_http":
         if hasattr(mcp, "run_sse_async"):
             sse_host = os.getenv("MCP_HOST", "127.0.0.1") 
             sse_port_str = os.getenv("MCP_PORT", "8080")  

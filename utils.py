@@ -5,8 +5,10 @@ import sys # For stderr
 def get_todoist_client():
     token = os.getenv("TODOIST_API_TOKEN")
     if not token:
-        print("ERROR in get_todoist_client: TODOIST_API_TOKEN not set in environment", file=sys.stderr)
-        # Updated error message for broader applicability
-        raise ValueError("TODOIST_API_TOKEN not set in environment. This token is required to use Todoist tools.")
+        # This error will be raised if a tool attempts to initialize the client
+        # and the token is not found in the environment.
+        error_msg = "TODOIST_API_TOKEN not found in environment. This token is required for the Todoist MCP to function. Please set it in your environment or provide it via Smithery configuration."
+        print(f"ERROR in get_todoist_client: {error_msg}", file=sys.stderr)
+        raise ValueError(error_msg)
     print("get_todoist_client: Token found, initializing TodoistAPI.", file=sys.stderr)
     return TodoistAPI(token)
