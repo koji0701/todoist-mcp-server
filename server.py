@@ -1012,7 +1012,7 @@ async def main():
 
     if transport == "stdio":
         await mcp.run_stdio_async()
-    elif transport == "sse":
+    elif transport == "sse" or transport == "streamable_http"::
         if hasattr(mcp, "run_sse_async"):
             sse_host = os.getenv("MCP_HOST", "127.0.0.1") 
             sse_port_str = os.getenv("MCP_PORT", "8080")  
