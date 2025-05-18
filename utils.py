@@ -6,6 +6,7 @@ def get_todoist_client():
     token = os.getenv("TODOIST_API_TOKEN")
     if not token:
         print("ERROR in get_todoist_client: TODOIST_API_TOKEN not set in environment", file=sys.stderr)
-        raise ValueError("TODOIST_API_TOKEN not set in environment. Please set it in .env or Claude Desktop config.")
+        # Updated error message for broader applicability
+        raise ValueError("TODOIST_API_TOKEN not set in environment. This token is required to use Todoist tools.")
     print("get_todoist_client: Token found, initializing TodoistAPI.", file=sys.stderr)
     return TodoistAPI(token)
