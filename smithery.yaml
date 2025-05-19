@@ -4,20 +4,17 @@ startCommand:
   type: stdio
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
-    # TODOIST_API_TOKEN is now sourced from the environment within the Python process.
     |-
-    (config) => ({ command: 'python', args: ['server.py'], env: { TRANSPORT: config.transport || 'stdio', PYTHONUNBUFFERED: '1', ...(config.transport === 'sse' ? { MCP_HOST: config.mcpHost, MCP_PORT: String(config.mcpPort) } : {}), ...(config.todoistApiToken ? { TODOIST_API_TOKEN: config.todoistApiToken } : {}) } })
+    (config) => ({ command: 'python', args: ['server.py'], env: { TODOIST_API_TOKEN: config.todoistApiToken, TRANSPORT: config.transport || 'stdio', PYTHONUNBUFFERED: '1', ...(config.transport === 'sse' ? { MCP_HOST: config.mcpHost, MCP_PORT: String(config.mcpPort) } : {}) } })
   configSchema:
     # JSON Schema defining the configuration options for the MCP.
     type: object
-    # todoistApiToken is no longer strictly required at startup for lazy loading.
-    # It will be pulled from the environment by the MCP when a tool is called.
-    # However, it's good practice to keep it here as an optional config
-    # so users know it's something they might need to provide.
+    required:
+      - todoistApiToken
     properties:
       todoistApiToken:
         type: string
-        description: Your Todoist API token (can also be set as an environment variable TODOIST_API_TOKEN)
+        description: Your Todoist API token
       transport:
         type: string
         default: stdio
@@ -31,8 +28,7 @@ startCommand:
         default: 8080
         description: Port for SSE transport
   exampleConfig:
-    # Token can be omitted here if set as an environment variable
-    # todoistApiToken: your_todoist_api_token_here
+    todoistApiToken: your_todoist_api_token_here
     transport: stdio
     mcpHost: 127.0.0.1
     mcpPort: 8080
